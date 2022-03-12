@@ -3,11 +3,13 @@ function createButton(parent, type, classes, id) {
     type = "div";
   }
   elm = document.createElement(type);
+
   if (classes != undefined) {
-    for (i = 0; i < classes.length; i++) {
-      elm.classList.add(classes[i]);
+    for (w = 0; w < classes.length; w++) {
+      elm.classList.add(classes[w]);
     }
   }
+
   if (id != undefined) {
     elm.id = id;
   }
@@ -16,10 +18,11 @@ function createButton(parent, type, classes, id) {
 }
 board = document.getElementById("board");
 for (i = 0; i < 6; i++) {
-  for (j = 0; j < 6; j++) {
-    cell = createButton((parent = board), "div", ["cell"]);
-    cell.style.color = "red";
-    cell.innerText = "A";
-    console.log("ASAD");
+  row = createButton(board, "div", ["row"]);
+  rowNum = i.toString();
+  for (j = 0; j < 5; j++) {
+    colNum = j.toString()
+    cell_id = ''.concat(rowNum, ":", colNum)
+    cell = createButton((parent = row), "div", ["cell", "col", "square"], cell_id);
   }
 }
