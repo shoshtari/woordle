@@ -1,0 +1,72 @@
+.animate-top {
+    position: relative;
+    animation: animatetop 0.4s;
+}
+
+@keyframes animatetop {
+    from {
+        top: -300px;
+        opacity: 0;
+    }
+
+    to {
+        top: 0;
+        opacity: 1;
+    }
+}
+
+.modal {
+    z-index: 3;
+    display: none;
+    padding-top: 100px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.4);
+    /* font-family: Segoe UI,Frutiger,Frutiger Linotype,Dejavu Sans,Helvetica Neue,Arial,sans-serif;  */
+}
+
+.modal-content {
+    margin: auto;
+    background-color: #fff;
+    position: relative;
+    padding: 0;
+    outline: 0;
+    width: 600px;
+    
+}
+.rounded{
+    border-radius: 50px;
+}
+
+
+.container,
+.panel {
+    padding: 0.01em 16px;
+}
+
+.panel {
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+.block-lazuli{
+    background-color: #007BFF;
+    color: white;
+}
+.modal_close_button{
+    position: relative;
+    right: 0;
+    top: 0;
+    padding: 10px;
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0);
+    border-radius: 50px;
+    float: right;
+    border-color: rgba(0, 0, 0, 0);
+    overflow: hidden;
+    max-height: 90%!important
+}
