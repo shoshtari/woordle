@@ -1,0 +1,20 @@
+#board{
+  width: 30%;
+  height: 30vw;
+}
+.cell{
+  display: flex;
+  margin: 0.3vw;
+  border-radius: 1.7vw;
+  width: 5vw;
+  height: 5vw;
+  font-family: robo;
+  font-family:Georgia, 'Times New Roman', Times, serif;
+  font-size: xx-large;
+  justify-content: center;
+  align-items: center;
+  border-radius: 25%;
+  border-color: lightgray;
+  border-style: solid;
+}
+
