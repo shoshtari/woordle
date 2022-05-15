@@ -17,8 +17,24 @@ from django.contrib import admin
 from django.urls import path
 from . import views
 
+modal_style = "modal_style.css"
+
+style = "style.css"
+table_creator = "tableCreator.js"
+check = "check.js"
+script = "script.js"
+modal_script = "modal_script.js"
+
 urlpatterns = [
     path('test/', views.test),
-    path('', views.main)
+    path('', views.main),
+
+
+    path(modal_style+"/", lambda request:views.file_loader(request, modal_style)),
+    path(style+"/", lambda request:views.file_loader(request, style)),
+    path(table_creator+"/", lambda request:views.file_loader(request, table_creator)),
+    path(check+"/", lambda request:views.file_loader(request, check)),
+    path(script+"/", lambda request:views.file_loader(request, script)),
+    path(modal_script+"/", lambda request:views.file_loader(request, modal_script)),
     
 ]
