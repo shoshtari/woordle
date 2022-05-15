@@ -18,3 +18,12 @@
   border-style: solid;
 }
 
+.zoom-apply{
+  animation: zoomAnim 0.7s;
+  animation-fill-mode: forwards;
+}
+@keyframes zoomAnim{
+  50%{
+    transform: scale(1.2);
+  }
+}

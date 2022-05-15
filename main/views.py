@@ -13,14 +13,7 @@ def test(request):
     }
     return render(request, 'main/test.html', context=var)
 def main(request):
-    pwd = get_root_path()
-    template_folder_path = os.path.join(pwd, "main/templates/main")
-    var = {
-        "word" : "salam",
-        # "path" : template_folder_path
-        "path" : "main"
-    }
-    return render(request, 'main/index.html', context=var)
+    return render(request, 'main/index.html')
 def file_loader(request, file_name):
     extension = file_name.split(".")[-1]
     if extension == "js":

@@ -12,6 +12,8 @@ function insertChar(a){
   cell_id = ''.concat(row, ":", col);
   if (a.charCodeAt(0) >= 'a'.charCodeAt(0) && a.charCodeAt(0)<='z'.charCodeAt(0)){
     elm = document.getElementById(cell_id);
+    elm.classList.add("zoom-apply");
+
     elm.innerText = a;
     // update_grid();
     current_col ++;
