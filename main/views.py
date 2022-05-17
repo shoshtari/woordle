@@ -1,6 +1,9 @@
-from http.client import HTTPResponse
-from django.shortcuts import render, HttpResponse
+
+from django.shortcuts import render
+from django.http import JsonResponse
 import os
+import json
+import time
 # Create your views here.
 def get_root_path():
     return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,3 +23,9 @@ def file_loader(request, file_name):
         extension = "javascript"
     mime_type = f"text/{extension}"
     return render(request, f'main/{file_name}', content_type = mime_type)
+def word_generator(request):
+    word = "aisle"
+    # time.sleep(10)
+    return JsonResponse({"word": word})
+    # return JsonResponse({})
+    

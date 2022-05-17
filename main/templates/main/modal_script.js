@@ -1,6 +1,5 @@
 // Get the modal
 var modal = document.getElementById("id01");
-console.log("Hi");
 // When the user clicks anywhere outside of the modal, close it
 hide_modal = function(modal_name){
     m = document.getElementById(modal_name);

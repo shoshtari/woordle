@@ -37,4 +37,5 @@ urlpatterns = [
     path(script+"/", lambda request:views.file_loader(request, script)),
     path(modal_script+"/", lambda request:views.file_loader(request, modal_script)),
     
+    path('word_generator/', views.word_generator),
 ]
