@@ -16,16 +16,17 @@ def test(request):
     }
     return render(request, 'main/test.html', context=var)
 def main(request):
-    return render(request, 'main/index.html')
+    var = {
+        "word" : "salam",
+    }
+    return render(request, 'main/index.html', context = var)
 def file_loader(request, file_name):
     extension = file_name.split(".")[-1]
     if extension == "js":
         extension = "javascript"
     mime_type = f"text/{extension}"
     return render(request, f'main/{file_name}', content_type = mime_type)
-def word_generator(request):
-    word = "aisle"
-    # time.sleep(10)
-    return JsonResponse({"word": word})
-    # return JsonResponse({})
-    
+def word_checker(request):
+    with open("a.txt", "wt") as f:
+        f.write("Salam")
+    return JsonResponse({"valid" : True})

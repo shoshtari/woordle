@@ -1,6 +1,5 @@
 function textToArray(text) {
   const ans = [];
-  console.log(text);
   for (let i = 0; i < text.length; i++) {
     ans.push(text[i]);
   }
@@ -14,14 +13,17 @@ function contain(arr, elm) {
   }
   return false;
 }
+
 function check(key, word) {
   /*
   word: the word to be checked
   key: our key(the word gotten from server)
   return an array of size 5 each element is 0->not in key, 1-> in key but wrong place , 2-> in key and correct place
   */
+
   let arr_word = textToArray(word);
   let arr_key = textToArray(key);
+  
   let ans = [0, 0, 0, 0, 0];
   for (let i = 0; i < 5; i++) {
     if (arr_word[i] == arr_key[i]) {
@@ -67,11 +69,7 @@ function halfCell(r, c) {
   element.style.color = "white"
   
 }
-function end(win){
-    if(win){
-      
-    }
-}
+
 function update_cells() {
   let insertedWord = "";
   for (let i = 0; i < 5; i++) {
@@ -91,7 +89,5 @@ function update_cells() {
       wrongCell(current_row, i);
     }
   }
-  if( stat.reduce(function(a, b){return a && b;}, true)){
-      end();
-  }
+
 }

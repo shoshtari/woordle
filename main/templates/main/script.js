@@ -1,25 +1,3 @@
-function getword(){
-  return new Promise((resolve, reject) => {
-    request = new XMLHttpRequest();
-    request.addEventListener("readystatechange", () => {
-      if (request.readyState === 4 && request.status === 200) {
-        resolve(JSON.parse(request.responseText).word);
-      }
-      if (request.readyState === 4 && request.status !== 200) {
-        reject("Can't connect to server!, please try again later");
-      }
-      
-    });
-    
-    request.open('GET', '/main/word_generator/');
-    request.send()
-  });
-}
-// const word = getword();
-getword().then(data => {
-  word = data;
-});
-
 function insertChar(charachter){
   if(charachter.length>1 || current_col>4 || current_row>5){
     return false;
@@ -54,13 +32,31 @@ function popChar(){
   elm.innerText = "";
   return 
 }
-function op(event) {
+async function check_word(word){
+  const responce = await fetch("/main/word_checker/", {
+    method: 'POST',
+    body : JSON.stringify({
+      title: 'New Pirate Captain',
+      body: 'Arrrrrr-ent you excited?',
+      userId: 3
+    }),
+    headers: {
+      'Content-type': 'application/json; charset=UTF-8',
+      'X-CSRFToken': csrftoken
+    }
+    });
+  const data = await responce.json();
+  return data;
+}
+async function keypressHandler(event) {
   if(!running){
     return;
   }
-  if (!insertChar(event.key) && current_col>4 && event.key=="Enter"){
+  let is_valid = (await check_word(word)).valid;
+  if (!insertChar(event.key) && current_col>4 && event.key=="Enter" && is_valid){
     win_check();
     update_cells()
+    
     current_row += 1;
     current_col = 0;
   }
@@ -84,7 +80,23 @@ function win_check(){
   running = 0;
   document.getElementById('win_modal').style.display='block';
 }
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          // Does this cookie string begin with the name we want?
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+          }
+      }
+  }
+  return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
 current_row = 0;
 current_col  = 0;
 running = 1;
-document.addEventListener("keydown", op);
+document.addEventListener("keydown", keypressHandler);
