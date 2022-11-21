@@ -36,9 +36,7 @@ async function check_word(word){
   const responce = await fetch("/main/word_checker/", {
     method: 'POST',
     body : JSON.stringify({
-      title: 'New Pirate Captain',
-      body: 'Arrrrrr-ent you excited?',
-      userId: 3
+      word: word
     }),
     headers: {
       'Content-type': 'application/json; charset=UTF-8',
@@ -52,13 +50,20 @@ async function keypressHandler(event) {
   if(!running){
     return;
   }
-  let is_valid = (await check_word(word)).valid;
-  if (!insertChar(event.key) && current_col>4 && event.key=="Enter" && is_valid){
-    win_check();
-    update_cells()
-    
-    current_row += 1;
-    current_col = 0;
+  if (!insertChar(event.key) && current_col>4 && event.key=="Enter"){
+    let ans = "";
+    for(let i=0;i<5;i++){
+        let cell = document.getElementById(''.concat(current_row, ':', i));
+        ans = ''.concat(ans, cell.innerText);
+    }
+    let is_valid = (await check_word(ans)).valid;
+    if(is_valid){
+      win_check();
+      update_cells()
+
+      current_row += 1;
+      current_col = 0;
+    }
   }
   if (current_row<6 && event.key=="Backspace"){
     popChar();
