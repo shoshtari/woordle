@@ -22,7 +22,7 @@ def test(request):
 
 def main(request):
     var = {
-        "word": "salam",
+        "word": view_helpers.get_random_word(),
     }
     return render(request, 'main/index.html', context=var)
 

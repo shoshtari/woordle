@@ -1,3 +1,6 @@
+import random, time
+random.seed(time.time())
+
 def load_words_closure():
     words = None
     def inner():
@@ -11,3 +14,7 @@ def load_words_closure():
         return words
     return inner
 load_words = load_words_closure()
+
+def get_random_word():
+    words = load_words()
+    return words[random.randint(0, len(words) - 1)]
