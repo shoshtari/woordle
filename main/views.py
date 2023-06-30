@@ -3,12 +3,12 @@ import os
 
 from django.http import JsonResponse
 from django.shortcuts import render
-
+from django.views.decorators.csrf import csrf_exempt
+from .import view_helpers
 
 # Create your views here.
 def get_root_path():
     return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 def test(request):
     pwd = get_root_path()
@@ -35,10 +35,9 @@ def file_loader(request, file_name):
     return render(request, f'main/{file_name}', content_type=mime_type)
 
 
+@csrf_exempt
 def word_checker(request):
     b = json.loads(request.body.decode('utf-8'))
-    with open("a.txt", "wt") as f:
-        f.write(b["word"])
-        print(b)
-    f.close()
-    return JsonResponse({"valid": True})
+    words = view_helpers.load_words()
+    is_valid = b["word"] in words
+    return JsonResponse({"valid": is_valid})
