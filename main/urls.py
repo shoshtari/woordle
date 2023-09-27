@@ -26,7 +26,6 @@ script = "script.js"
 modal_script = "modal_script.js"
 
 urlpatterns = [
-    path('test/', views.test),
     path('', views.main),
 
 
@@ -36,6 +35,6 @@ urlpatterns = [
     path(check+"/", lambda request:views.file_loader(request, check)),
     path(script+"/", lambda request:views.file_loader(request, script)),
     path(modal_script+"/", lambda request:views.file_loader(request, modal_script)),
-    
+
     path('word_checker/', views.word_checker),
 ]

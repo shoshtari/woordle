@@ -7,17 +7,10 @@ from django.views.decorators.csrf import csrf_exempt
 from .import view_helpers
 
 # Create your views here.
+
+
 def get_root_path():
     return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-def test(request):
-    pwd = get_root_path()
-    template_folder_path = os.path.join(pwd, "main/templates/main")
-    var = {
-        "word": "salam",
-        "path": template_folder_path
-    }
-    return render(request, 'main/test.html', context=var)
 
 
 def main(request):
