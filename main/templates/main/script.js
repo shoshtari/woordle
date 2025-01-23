@@ -16,17 +16,23 @@ function createButton(parent, type, classes, id) {
   parent.appendChild(elm);
   return elm;
 }
-function createTable(){
-board = document.getElementById("board");
-for (i = 0; i < 6; i++) {
-  row = createButton(board, "div", ["row" ]);
-  rowNum = i.toString();
-  for (j = 0; j < 5; j++) {
-    colNum = j.toString()
-    cell_id = ''.concat(rowNum, ":", colNum)
-    cell = createButton((parent = row), "div", ["cell", "col", "square"], cell_id);
+
+function createTable() {
+  board = document.getElementById("board");
+  for (i = 0; i < 6; i++) {
+    row = createButton(board, "div", ["row"]);
+    rowNum = i.toString();
+    for (j = 0; j < 5; j++) {
+      colNum = j.toString();
+      cell_id = "".concat(rowNum, ":", colNum);
+      cell = createButton(
+        (parent = row),
+        "div",
+        ["cell", "col", "square"],
+        cell_id,
+      );
+    }
   }
-}
 }
 
 function textToArray(text) {
@@ -54,7 +60,7 @@ function check(key, word) {
 
   let arr_word = textToArray(word);
   let arr_key = textToArray(key);
-  
+
   let ans = [0, 0, 0, 0, 0];
   for (let i = 0; i < 5; i++) {
     if (arr_word[i] == arr_key[i]) {
@@ -63,9 +69,8 @@ function check(key, word) {
     }
   }
   for (let i = 0; i < 5; i++) {
-
     let ind = arr_key.indexOf(arr_word[i]);
-    if(ans[i]!=2 && ind!=-1){
+    if (ans[i] != 2 && ind != -1) {
       arr_key[ind] = ".";
       ans[i] = 1;
     }
@@ -79,7 +84,7 @@ function correctCell(row, column) {
   elm_id = "".concat(row, ":", column);
   element = document.getElementById(elm_id);
   element.style.backgroundColor = "green";
-  element.style.color = "white"
+  element.style.color = "white";
 }
 function wrongCell(r, c) {
   /*
@@ -88,7 +93,7 @@ function wrongCell(r, c) {
   elm_id = "".concat(r, ":", c);
   element = document.getElementById(elm_id);
   element.style.backgroundColor = "#787c7e";
-  element.style.color = "white"
+  element.style.color = "white";
 }
 function halfCell(r, c) {
   /*
@@ -97,8 +102,7 @@ function halfCell(r, c) {
   elm_id = "".concat(r, ":", c);
   element = document.getElementById(elm_id);
   element.style.backgroundColor = "#c9b458";
-  element.style.color = "white"
-  
+  element.style.color = "white";
 }
 
 function update_cells() {
@@ -106,7 +110,7 @@ function update_cells() {
   for (let i = 0; i < 5; i++) {
     cell_id = "".concat(current_row, ":", i);
     elm = document.getElementById(cell_id);
-    insertedWord = "".concat(insertedWord, elm.innerText)
+    insertedWord = "".concat(insertedWord, elm.innerText);
   }
   stat = check(word, insertedWord);
   for (let i = 0; i < 5; i++) {
@@ -120,17 +124,19 @@ function update_cells() {
       wrongCell(current_row, i);
     }
   }
-
 }
 function insertChar(charachter) {
   if (charachter.length > 1 || current_col > 4 || current_row > 5) {
     return false;
   }
   charachter = charachter.toLowerCase();
-  row = current_row.toString()
-  col = current_col.toString()
-  cell_id = ''.concat(row, ":", col);
-  if (charachter.charCodeAt(0) >= 'a'.charCodeAt(0) && charachter.charCodeAt(0) <= 'z'.charCodeAt(0)) {
+  row = current_row.toString();
+  col = current_col.toString();
+  cell_id = "".concat(row, ":", col);
+  if (
+    charachter.charCodeAt(0) >= "a".charCodeAt(0) &&
+    charachter.charCodeAt(0) <= "z".charCodeAt(0)
+  ) {
     elm = document.getElementById(cell_id);
 
     elm.classList.add("zoom-apply");
@@ -139,7 +145,7 @@ function insertChar(charachter) {
     current_col++;
     return true;
   }
-  return false
+  return false;
 }
 
 function popChar() {
@@ -147,25 +153,25 @@ function popChar() {
     return;
   }
   current_col--;
-  row = current_row.toString()
-  col = current_col.toString()
+  row = current_row.toString();
+  col = current_col.toString();
 
-  cell_id = ''.concat(row, ":", col);
+  cell_id = "".concat(row, ":", col);
   elm = document.getElementById(cell_id);
-  elm.classList.remove("zoom-apply")
+  elm.classList.remove("zoom-apply");
   elm.innerText = "";
-  return
+  return;
 }
 async function check_word(word) {
   const responce = await fetch("/main/word_checker/", {
-    method: 'POST',
+    method: "POST",
     body: JSON.stringify({
-      word: word
+      word: word,
     }),
     headers: {
-      'Content-type': 'application/json; charset=UTF-8',
-      'X-CSRFToken': csrftoken
-    }
+      "Content-type": "application/json; charset=UTF-8",
+      "X-CSRFToken": csrftoken,
+    },
   });
   const data = await responce.json();
   return data;
@@ -177,28 +183,28 @@ async function keypressHandler(event) {
   if (!insertChar(event.key) && current_col > 4 && event.key == "Enter") {
     let ans = "";
     for (let i = 0; i < 5; i++) {
-      let cell = document.getElementById(''.concat(current_row, ':', i));
-      ans = ''.concat(ans, cell.innerText);
+      let cell = document.getElementById("".concat(current_row, ":", i));
+      ans = "".concat(ans, cell.innerText);
     }
     let is_valid = (await check_word(ans)).valid;
     if (is_valid) {
       win_check();
-      update_cells()
+      update_cells();
 
       current_row += 1;
       current_col = 0;
     } else {
       for (let i = 0; i < 5; i++) {
-        cell = document.getElementById(''.concat(current_row, ":", i))
-        cell.classList.add("shake-apply")
+        cell = document.getElementById("".concat(current_row, ":", i));
+        cell.classList.add("shake-apply");
       }
       setTimeout(() => {
         for (let i = 0; i < 5; i++) {
-          cell = document.getElementById(''.concat(current_row, ":", i))
-          cell.classList.remove("shake-apply")
-          cell.classList.remove("zoom-apply")
+          cell = document.getElementById("".concat(current_row, ":", i));
+          cell.classList.remove("shake-apply");
+          cell.classList.remove("zoom-apply");
         }
-      }, 1000)
+      }, 1000);
     }
   }
   if (current_row < 6 && event.key == "Backspace") {
@@ -208,27 +214,26 @@ async function keypressHandler(event) {
 function win_check() {
   let ans = "";
   for (let i = 0; i < 5; i++) {
-    let cell = document.getElementById(''.concat(current_row, ':', i));
+    let cell = document.getElementById("".concat(current_row, ":", i));
 
-    ans = ''.concat(ans, cell.innerText);
+    ans = "".concat(ans, cell.innerText);
   }
   if (ans.toLowerCase() != word) {
     if (current_row == 5) {
-      document.getElementById('lose_modal').style.display = 'block';
+      document.getElementById("lose_modal").style.display = "block";
     }
     return 0;
   }
   running = 0;
-  document.getElementById('win_modal').style.display = 'block';
+  document.getElementById("win_modal").style.display = "block";
 }
 function getCookie(name) {
   let cookieValue = null;
-  if (document.cookie && document.cookie !== '') {
-    const cookies = document.cookie.split(';');
+  if (document.cookie && document.cookie !== "") {
+    const cookies = document.cookie.split(";");
     for (let i = 0; i < cookies.length; i++) {
       const cookie = cookies[i].trim();
-      // Does this cookie string begin with the name we want?
-      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+      if (cookie.substring(0, name.length + 1) === name + "=") {
         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
         break;
       }
@@ -236,7 +241,7 @@ function getCookie(name) {
   }
   return cookieValue;
 }
-const csrftoken = getCookie('csrftoken');
+const csrftoken = getCookie("csrftoken");
 current_row = 0;
 current_col = 0;
 running = 1;
