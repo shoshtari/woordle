@@ -180,7 +180,7 @@ function popChar() {
   return;
 }
 async function check_word(word) {
-  const userId = Bale?.initData.user.id || 1239963443;
+  const userId = Bale?.initData.user.id ;
   const responce = await fetch("/word_checker/", {
     method: "POST",
     body: JSON.stringify({
@@ -196,7 +196,7 @@ async function check_word(word) {
   return data;
 }
 async function get_guesses(word) {
-  const userId = window.Bale?.initData.user.id || 1239963443;
+  const userId = Bale?.initData.user.id;
   const responce = await fetch("/guesses/", {
     method: "GET",
     headers: {
