@@ -13,6 +13,10 @@ function createButton(parent, type, classes, id) {
   if (id != undefined) {
     elm.id = id;
   }
+  elm.addEventListener("click", (event) => {
+    const inp_elm = document.getElementById("false_input");
+    inp_elm.focus();
+  });
   parent.appendChild(elm);
   return elm;
 }
@@ -163,7 +167,7 @@ function popChar() {
   return;
 }
 async function check_word(word) {
-  const responce = await fetch("/main/word_checker/", {
+  const responce = await fetch("/word_checker/", {
     method: "POST",
     body: JSON.stringify({
       word: word,
@@ -176,40 +180,57 @@ async function check_word(word) {
   const data = await responce.json();
   return data;
 }
+
+async function submitWord() {
+  let ans = "";
+  for (let i = 0; i < 5; i++) {
+    let cell = document.getElementById("".concat(current_row, ":", i));
+    ans = "".concat(ans, cell.innerText);
+  }
+  let is_valid = (await check_word(ans)).valid;
+  if (is_valid) {
+    win_check();
+    update_cells();
+
+    current_row += 1;
+    current_col = 0;
+  } else {
+    for (let i = 0; i < 5; i++) {
+      cell = document.getElementById("".concat(current_row, ":", i));
+      cell.classList.add("shake-apply");
+    }
+    setTimeout(() => {
+      for (let i = 0; i < 5; i++) {
+        cell = document.getElementById("".concat(current_row, ":", i));
+        cell.classList.remove("shake-apply");
+        cell.classList.remove("zoom-apply");
+      }
+    }, 1000);
+  }
+}
+
+let rowSize = 0;
+function updateRow(event) {
+  const text = event.target.value;
+  if (text.length > rowSize) {
+    insertChar(text[text.length - 1]);
+    rowSize += 1;
+  } else if (text.length < rowSize && rowSize > 0) {
+    popChar();
+    rowSize--;
+  }
+}
+
 async function keypressHandler(event) {
   if (!running) {
     return;
   }
-  if (!insertChar(event.key) && current_col > 4 && event.key == "Enter") {
-    let ans = "";
-    for (let i = 0; i < 5; i++) {
-      let cell = document.getElementById("".concat(current_row, ":", i));
-      ans = "".concat(ans, cell.innerText);
-    }
-    let is_valid = (await check_word(ans)).valid;
-    if (is_valid) {
-      win_check();
-      update_cells();
+  if (current_col > 4 && event.key == "Enter") {
+    submitWord();
+    return;
+  }
 
-      current_row += 1;
-      current_col = 0;
-    } else {
-      for (let i = 0; i < 5; i++) {
-        cell = document.getElementById("".concat(current_row, ":", i));
-        cell.classList.add("shake-apply");
-      }
-      setTimeout(() => {
-        for (let i = 0; i < 5; i++) {
-          cell = document.getElementById("".concat(current_row, ":", i));
-          cell.classList.remove("shake-apply");
-          cell.classList.remove("zoom-apply");
-        }
-      }, 1000);
-    }
-  }
-  if (current_row < 6 && event.key == "Backspace") {
-    popChar();
-  }
+  updateRow(event);
 }
 function win_check() {
   let ans = "";
@@ -245,4 +266,9 @@ const csrftoken = getCookie("csrftoken");
 current_row = 0;
 current_col = 0;
 running = 1;
-document.addEventListener("keydown", keypressHandler);
+window.addEventListener("load", (event) => {
+  document.getElementById("false_input").focus();
+  document.getElementById("false_input").value = "";
+  document.getElementById("false_input").addEventListener("keyup", keypressHandler);
+  // document.getElementById("false_input").addEventListener("", keypressHandler);
+});
