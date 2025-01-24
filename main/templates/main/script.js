@@ -21,7 +21,7 @@ function createButton(parent, type, classes, id) {
   return elm;
 }
 
-function createTable() {
+async function createTable() {
   board = document.getElementById("board");
   for (i = 0; i < 6; i++) {
     row = createButton(board, "div", ["row"]);
@@ -36,6 +36,11 @@ function createTable() {
         cell_id,
       );
     }
+  }
+  const guesses = await get_guesses();
+  for (let i = 0; i < guesses.length; i++) {
+    const word = guesses.at(i);
+    fillRow(word);
   }
 }
 
@@ -55,6 +60,12 @@ function contain(arr, elm) {
   return false;
 }
 
+function fillRow(word) {
+  for (let i = 0; i < word.length; i++) {
+    insertChar(word.at(i), (animation_enable = false));
+  }
+  submitWord((animation_enable = false), (do_check_word = false));
+}
 function check(key, word) {
   /*
   word: the word to be checked
@@ -129,7 +140,7 @@ function update_cells() {
     }
   }
 }
-function insertChar(charachter) {
+function insertChar(charachter, animation_enable = true) {
   if (charachter.length > 1 || current_col > 4 || current_row > 5) {
     return false;
   }
@@ -143,7 +154,9 @@ function insertChar(charachter) {
   ) {
     elm = document.getElementById(cell_id);
 
-    elm.classList.add("zoom-apply");
+    if (animation_enable) {
+      elm.classList.add("zoom-apply");
+    }
 
     elm.innerText = charachter;
     current_col++;
@@ -167,6 +180,7 @@ function popChar() {
   return;
 }
 async function check_word(word) {
+  const userId = window.Bale?.initData.user.id || 1239963443;
   const responce = await fetch("/word_checker/", {
     method: "POST",
     body: JSON.stringify({
@@ -175,19 +189,40 @@ async function check_word(word) {
     headers: {
       "Content-type": "application/json; charset=UTF-8",
       "X-CSRFToken": csrftoken,
+      "Bale-Id": userId,
     },
   });
   const data = await responce.json();
   return data;
 }
+async function get_guesses(word) {
+  const userId = window.Bale?.initData.user.id || 1239963443;
+  const responce = await fetch("/guesses/", {
+    method: "GET",
+    headers: {
+      "Content-type": "application/json; charset=UTF-8",
+      "X-CSRFToken": csrftoken,
+      "Bale-Id": userId,
+    },
+  });
+  if (responce.status !== 200) {
+    throw new Error(`HTTP error! Status: ${response.status}`);
+  }
 
-async function submitWord() {
+  const data = await responce.json();
+  return data.guesses;
+}
+
+async function submitWord(animation_enable = true, do_check_word = true) {
   let ans = "";
   for (let i = 0; i < 5; i++) {
     let cell = document.getElementById("".concat(current_row, ":", i));
     ans = "".concat(ans, cell.innerText);
   }
-  let is_valid = (await check_word(ans)).valid;
+  let is_valid = true;
+  if (do_check_word) {
+    is_valid = (await check_word(ans)).valid;
+  }
   if (is_valid) {
     win_check();
     update_cells();
@@ -195,6 +230,10 @@ async function submitWord() {
     current_row += 1;
     current_col = 0;
   } else {
+    if (!animation_enable) {
+      return;
+    }
+
     for (let i = 0; i < 5; i++) {
       cell = document.getElementById("".concat(current_row, ":", i));
       cell.classList.add("shake-apply");
@@ -269,6 +308,8 @@ running = 1;
 window.addEventListener("load", (event) => {
   document.getElementById("false_input").focus();
   document.getElementById("false_input").value = "";
-  document.getElementById("false_input").addEventListener("keyup", keypressHandler);
+  document
+    .getElementById("false_input")
+    .addEventListener("keyup", keypressHandler);
   // document.getElementById("false_input").addEventListener("", keypressHandler);
 });
