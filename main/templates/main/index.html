@@ -23,7 +23,11 @@
   <link rel="stylesheet" href="./style.css" />
 
   <script>
-    const word = "{{word}}";
+    <!-- const word = "{{word}}"; -->
+	<!-- const low_char = {{low_char}}; -->
+	<!-- const high_char = {{high_char}}; -->
+	<!-- const direction= {{direction}}; -->
+
   </script>
   <script src="./script.js"></script>
   <link rel="stylesheet" href="./modal_style.css">
@@ -149,7 +153,7 @@
 <div id="board" class="container">
 	<input type="text" name="" value="" id="false_input" style="position: absolute; background: transparent;border: none; outline: none; color: transparent;">
 
-    <script>createTable()</script>
+    <script>initVars(); createTable(); </script>
   </div>
 
   <!-- Win Modal -->

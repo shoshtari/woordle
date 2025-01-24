@@ -37,11 +37,6 @@ async function createTable() {
       );
     }
   }
-  const guesses = await get_guesses();
-  for (let i = 0; i < guesses.length; i++) {
-    const word = guesses.at(i);
-    fillRow(word);
-  }
 }
 
 function textToArray(text) {
@@ -61,6 +56,7 @@ function contain(arr, elm) {
 }
 
 function fillRow(word) {
+	console.log("fill", word);
   for (let i = 0; i < word.length; i++) {
     insertChar(word.at(i), (animation_enable = false));
   }
@@ -122,26 +118,52 @@ function halfCell(r, c) {
 
 function update_cells() {
   let insertedWord = "";
-  for (let i = 0; i < 5; i++) {
-    cell_id = "".concat(current_row, ":", i);
-    elm = document.getElementById(cell_id);
-    insertedWord = "".concat(insertedWord, elm.innerText);
-  }
-  stat = check(word, insertedWord);
-  for (let i = 0; i < 5; i++) {
-    if (stat[i] == 2) {
-      correctCell(current_row, i);
+  if (direction == "left") {
+    for (let i = 0; i < 5; i++) {
+      cell_id = "".concat(current_row, ":", i);
+      elm = document.getElementById(cell_id);
+      insertedWord = "".concat(insertedWord, elm.innerText);
     }
-    if (stat[i] == 1) {
-      halfCell(current_row, i);
+    stat = check(word, insertedWord);
+    for (let i = 0; i < 5; i++) {
+      if (stat[i] == 2) {
+        correctCell(current_row, i);
+      }
+      if (stat[i] == 1) {
+        halfCell(current_row, i);
+      }
+      if (stat[i] == 0) {
+        wrongCell(current_row, i);
+      }
     }
-    if (stat[i] == 0) {
-      wrongCell(current_row, i);
+  } else {
+    for (let i = 4; i > -1; i--) {
+      cell_id = "".concat(current_row, ":", i);
+      elm = document.getElementById(cell_id);
+      insertedWord = "".concat(insertedWord, elm.innerText);
+    }
+    stat = check(word, insertedWord).reverse();
+	  console.log(word, insertedWord, stat);
+    for (let i = 0; i < 5; i++) {
+      if (stat[i] == 2) {
+        correctCell(current_row, i);
+      }
+      if (stat[i] == 1) {
+        halfCell(current_row, i);
+      }
+      if (stat[i] == 0) {
+        wrongCell(current_row, i);
+      }
     }
   }
 }
 function insertChar(charachter, animation_enable = true) {
-  if (charachter.length > 1 || current_col > 4 || current_row > 5) {
+  if (
+    charachter.length > 1 ||
+    current_col > 4 ||
+    current_col < 0 ||
+    current_row > 5
+  ) {
     return false;
   }
   charachter = charachter.toLowerCase();
@@ -149,8 +171,8 @@ function insertChar(charachter, animation_enable = true) {
   col = current_col.toString();
   cell_id = "".concat(row, ":", col);
   if (
-    charachter.charCodeAt(0) >= "a".charCodeAt(0) &&
-    charachter.charCodeAt(0) <= "z".charCodeAt(0)
+    charachter.charCodeAt(0) >= low_char.charCodeAt(0) &&
+    charachter.charCodeAt(0) <= high_char.charCodeAt(0)
   ) {
     elm = document.getElementById(cell_id);
 
@@ -159,17 +181,28 @@ function insertChar(charachter, animation_enable = true) {
     }
 
     elm.innerText = charachter;
-    current_col++;
+    if (direction == "right") {
+      current_col--;
+    } else {
+      current_col++;
+    }
     return true;
   }
   return false;
 }
 
 function popChar() {
-  if (current_col == 0) {
+  if (
+    (current_col == 4 && direction == "right") ||
+    (current_col == 0 && direction == "left")
+  ) {
     return;
   }
-  current_col--;
+  if (direction == "left") {
+    current_col--;
+  } else {
+    current_col++;
+  }
   row = current_row.toString();
   col = current_col.toString();
 
@@ -180,7 +213,7 @@ function popChar() {
   return;
 }
 async function check_word(word) {
-  const userId = Bale?.initData.user.id ;
+  const userId = Window?.Bale?.initData.user.id || 1239963443;
   const responce = await fetch("/word_checker/", {
     method: "POST",
     body: JSON.stringify({
@@ -196,7 +229,7 @@ async function check_word(word) {
   return data;
 }
 async function get_guesses(word) {
-  const userId = Bale?.initData.user.id;
+  const userId = Window?.Bale?.initData.user.id || 1239963443;
   const responce = await fetch("/guesses/", {
     method: "GET",
     headers: {
@@ -215,9 +248,17 @@ async function get_guesses(word) {
 
 async function submitWord(animation_enable = true, do_check_word = true) {
   let ans = "";
-  for (let i = 0; i < 5; i++) {
-    let cell = document.getElementById("".concat(current_row, ":", i));
-    ans = "".concat(ans, cell.innerText);
+  if (direction == "right") {
+    for (let i = 4; i >= 0; i--) {
+      let cell = document.getElementById("".concat(current_row, ":", i));
+      ans = "".concat(ans, cell.innerText);
+    }
+  }
+  if (direction == "left") {
+    for (let i = 0; i < 5; i++) {
+      let cell = document.getElementById("".concat(current_row, ":", i));
+      ans = "".concat(ans, cell.innerText);
+    }
   }
   let is_valid = true;
   if (do_check_word) {
@@ -228,7 +269,11 @@ async function submitWord(animation_enable = true, do_check_word = true) {
     update_cells();
 
     current_row += 1;
-    current_col = 0;
+    if (direction == "right") {
+      current_col = 4;
+    } else {
+      current_col = 0;
+    }
   } else {
     if (!animation_enable) {
       return;
@@ -264,7 +309,7 @@ async function keypressHandler(event) {
   if (!running) {
     return;
   }
-  if (current_col > 4 && event.key == "Enter") {
+  if ((current_col > 4 || current_col < 0) && event.key == "Enter") {
     submitWord();
     return;
   }
@@ -273,11 +318,18 @@ async function keypressHandler(event) {
 }
 function win_check() {
   let ans = "";
-  for (let i = 0; i < 5; i++) {
-    let cell = document.getElementById("".concat(current_row, ":", i));
-
-    ans = "".concat(ans, cell.innerText);
+  if (direction == "right") {
+    for (let i = 4; i > -1; i--) {
+      let cell = document.getElementById("".concat(current_row, ":", i));
+      ans = "".concat(ans, cell.innerText);
+    }
+  } else {
+    for (let i = 0; i < 5; i++) {
+      let cell = document.getElementById("".concat(current_row, ":", i));
+      ans = "".concat(ans, cell.innerText);
+    }
   }
+  console.log(ans);
   if (ans.toLowerCase() != word) {
     if (current_row == 5) {
       document.getElementById("lose_modal").style.display = "block";
@@ -301,10 +353,43 @@ function getCookie(name) {
   }
   return cookieValue;
 }
+word = "";
+low_char = "";
+high_char = "";
+direction = "";
+async function initVars() {
+  const userId = Window?.Bale?.initData.user.id || 1239963443;
+  const responce = await fetch("/vars", {
+    method: "GET",
+    headers: {
+      "Content-type": "application/json; charset=UTF-8",
+      "X-CSRFToken": csrftoken,
+      "Bale-Id": userId,
+    },
+  });
+  if (responce.status !== 200) {
+    throw new Error(`HTTP error! Status: ${response.status}`);
+  }
+  const data = await responce.json();
+  word = data.word;
+  high_char = data.high_char;
+  low_char = data.low_char;
+  direction = data.direction;
+  current_row = 0;
+  if (direction == "right") {
+    current_col = 4;
+  } else {
+    current_col = 0;
+  }
+  running = 1;
+  const guesses = await get_guesses();
+  for (let i = 0; i < guesses.length; i++) {
+    const word = guesses.at(i);
+    fillRow(word);
+  }
+}
+
 const csrftoken = getCookie("csrftoken");
-current_row = 0;
-current_col = 0;
-running = 1;
 window.addEventListener("load", (event) => {
   document.getElementById("false_input").focus();
   document.getElementById("false_input").value = "";

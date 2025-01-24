@@ -32,4 +32,6 @@ urlpatterns = [
     path(modal_script + "/", lambda request: views.file_loader(request, modal_script)),
     path("word_checker/", views.word_checker),
     path("guesses/", views.get_guesses),
+    path("vars/", views.get_vars),
+    path("change_lang/", views.change_lang),
 ]
